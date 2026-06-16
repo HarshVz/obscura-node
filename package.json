@@ -1,0 +1,54 @@
+{
+    "name": "obscura-node",
+    "version": "1.0.0",
+    "description": "Node.js wrapper for Obscura — the Rust-powered headless browser for AI agents and web scraping. Drop-in replacement for headless Chrome with Puppeteer and Playwright. Ultra-lightweight (~30 MB), instant startup, built-in stealth mode.",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "type": "module",
+    "files": [ "dist" ],
+    "scripts": {
+        "build": "tsc",
+        "start": "node ./dist/index.js",
+        "watch": "tsx ./src/index.ts --watch",
+        "dev": "tsx ./src/index.ts",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "keywords": [
+        "obscura",
+        "headless-browser",
+        "browser-automation",
+        "web-scraping",
+        "ai-agent",
+        "cdp",
+        "chrome-devtools-protocol",
+        "puppeteer",
+        "playwright",
+        "stealth-browser",
+        "rust-browser",
+        "headless-chrome-alternative",
+        "lightweight-browser",
+        "v8",
+        "web-automation",
+        "anti-detection",
+        "crawler"
+    ],
+    "author": "h4ckf0r0day",
+    "license": "ISC",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/h4ckf0r0day/obscura-node.git"
+    },
+    "homepage": "https://github.com/h4ckf0r0day/obscura-node#readme",
+    "bugs": {
+        "url": "https://github.com/h4ckf0r0day/obscura-node/issues"
+    },
+    "dependencies": {
+        "unzipper": "^0.12.3"
+    },
+    "devDependencies": {
+        "@types/node": "^25.9.3",
+        "@types/unzipper": "^0.10.11",
+        "tsx": "^4.22.4",
+        "typescript": "^6.0.3"
+    }
+}
