@@ -3,9 +3,10 @@
 > Node.js wrapper for [Obscura](https://github.com/h4ckf0r0day/obscura) — the Rust-powered headless browser built for AI agents and web scraping. Drop-in replacement for headless Chrome with Puppeteer & Playwright.
 
 [![npm version](https://img.shields.io/npm/v/obscura-node)](https://www.npmjs.com/package/obscura-node)
-[![GitHub stars](https://img.shields.io/github/stars/h4ckf0r0day/obscura?label=Obscura%20stars)](https://github.com/h4ckf0r0day/obscura)
+[![GitHub](https://img.shields.io/github/stars/HarshVz/obscura-node?label=obscura-node)](https://github.com/HarshVz/obscura-node)
+[![Obscura engine](https://img.shields.io/github/stars/h4ckf0r0day/obscura?label=Obscura%20engine&color=blueviolet)](https://github.com/h4ckf0r0day/obscura)
 [![License](https://img.shields.io/badge/license-ISC-blue)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey)](https://github.com/h4ckf0r0day/obscura)
+[![Platform](https://img.shields.io/badge/platform-linux%20%7C%20macOS%20%7C%20windows-lightgrey)](https://github.com/HarshVz/obscura-node)
 
 ---
 
@@ -14,6 +15,8 @@
 [Obscura](https://github.com/h4ckf0r0day/obscura) is an open-source headless browser engine **written from scratch in Rust** — not a fork or fork of Chromium. It runs real JavaScript via V8 (`deno_core`), builds a live DOM from parsed HTML, and exposes the **Chrome DevTools Protocol (CDP)** over WebSocket. This means it works as a **drop-in replacement** for headless Chrome with **Puppeteer** and **Playwright** — but at a fraction of the resource cost.
 
 **obscura-node** downloads, installs, and launches the Obscura binary for you. One function call gives you a CDP endpoint you can use with any CDP-compatible library.
+
+> **💡 obscura-node is a Node.js wrapper around [Obscura](https://github.com/h4ckf0r0day/obscura)** — the incredible Rust headless browser built by [@h4ckf0r0day](https://github.com/h4ckf0r0day). All credit for the browser engine, stealth, benchmarks, and CDP implementation goes to the original author. This package just makes it easy to use from Node.js.
 
 ---
 
@@ -270,3 +273,9 @@ obscura-node (npm package)
 ## License
 
 ISC
+
+---
+
+## Credits
+
+[Obscura](https://github.com/h4ckf0r0day/obscura) was created by [@h4ckf0r0day](https://github.com/h4ckf0r0day). This Node.js wrapper is maintained separately but relies entirely on the original Obscura binary. If you find this useful, please also [star the original repo](https://github.com/h4ckf0r0day/obscura).

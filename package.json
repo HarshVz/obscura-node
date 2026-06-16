@@ -32,15 +32,15 @@
         "anti-detection",
         "crawler"
     ],
-    "author": "h4ckf0r0day",
+    "author": "HarshVz",
     "license": "ISC",
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/h4ckf0r0day/obscura-node.git"
+        "url": "git+https://github.com/HarshVz/obscura-node.git"
     },
-    "homepage": "https://github.com/h4ckf0r0day/obscura-node#readme",
+    "homepage": "https://github.com/HarshVz/obscura-node#readme",
     "bugs": {
-        "url": "https://github.com/h4ckf0r0day/obscura-node/issues"
+        "url": "https://github.com/HarshVz/obscura-node/issues"
     },
     "dependencies": {
         "unzipper": "^0.12.3"
