@@ -2,3 +2,4 @@ node_modules
 .agents
 binaries
 src
+skills-lock.json
