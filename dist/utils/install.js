@@ -5,7 +5,7 @@ import path from "node:path";
 import { getPlatformKey } from "./start.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { createGunzip } from "zlib";
+import { execFileSync } from 'child_process';
 import { Extract } from "unzipper";
 import { createReadStream } from "fs";
 import { pipeline } from "stream/promises";
@@ -23,7 +23,7 @@ const ASSET_BY_PLATFORM = {
     "win32-x64": "obscura-x86_64-windows.zip",
 };
 async function extractTarGz(archive, dest) {
-    await pipeline(createReadStream(archive), createGunzip(), Extract({ path: dest }));
+    execFileSync('tar', ['-xzf', archive, '-C', dest], { stdio: 'inherit' });
 }
 // For .zip (using unzipper which works cross-platform):
 async function extractZip(archive, dest) {
@@ -108,7 +108,7 @@ export async function main() {
             await extractZip(tempArchive, extractDir);
         }
         else if (assetName.endsWith(".tar.gz")) {
-            await extractTarGz(tempArchive, extractDir);
+            extractTarGz(tempArchive, extractDir);
         }
         else {
             throw new Error(`Unsupported archive type: ${assetName}`);
