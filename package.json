@@ -1,6 +1,6 @@
 {
     "name": "obscura-node",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Node.js wrapper for Obscura — the Rust-powered headless browser for AI agents and web scraping. Drop-in replacement for headless Chrome with Puppeteer and Playwright. Ultra-lightweight (~30 MB), instant startup, built-in stealth mode.",
     "main": "./dist/index.js",
     "types": "./dist/index.d.ts",
