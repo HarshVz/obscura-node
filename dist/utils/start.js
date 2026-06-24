@@ -171,8 +171,10 @@ export async function loadObscura(options = {}) {
     // child.stderr.on("data", (chunk) =>
     //   console.error("[obscura:stderr]", chunk.toString().trim()),
     // );
-    logOutput(child.stdout, "[obscura]");
-    logOutput(child.stderr, "[obscura:stderr]");
+    if (options.logs) {
+        logOutput(child.stdout, "[obscura]");
+        logOutput(child.stderr, "[obscura:stderr]");
+    }
     try {
         const version = await waitForReady(endpoint, options.startupTimeoutMs || 10000, child);
         // console.log("started");
