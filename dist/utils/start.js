@@ -186,7 +186,7 @@ async function stopChild(child) {
 //     });
 //   });
 // }
-export async function fetch(url, options = {}) {
+export async function ObscuraFetch(url, options = {}) {
     let format = options.dump ?? "html";
     const args = ["fetch", url, "--dump", String(format)];
     if (options.stealth)

@@ -1,7 +1,7 @@
-import { fetch } from "./utils/start.js"; // adjust import path
+import { ObscuraFetch } from "./utils/start.js"; // adjust import path
 (async () => {
     try {
-        const result = await fetch('https://example.com', {
+        const result = await ObscuraFetch('https://example.com', {
             dump: 'text',
             timeout: 10,
             quiet: true, // suppress info logs
