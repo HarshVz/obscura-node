@@ -143,6 +143,103 @@ async function stopChild(child) {
 //   startupTimeoutMs: 10000,
 //   port: 9222,
 // });
+// export async function scrape(
+//   urls: string | string[],
+//   options: ScrapeOptions = {}
+// ): Promise<string> {
+//   const urlList = Array.isArray(urls) ? urls : [urls];
+//   const args = ["scrape", ...urlList];
+//   // Add flags only if they are provided
+//   if (options.eval) args.push("--eval", options.eval);
+//   if (options.verbose) args.push("--verbose");
+//   if (options.concurrency !== undefined) args.push("--concurrency", String(options.concurrency));
+//   if (options.format) args.push("--format", options.format);
+//   if (options.timeout !== undefined) args.push("--timeout", String(options.timeout));
+//   if (options.quiet) args.push("--quiet");
+//   if (options.proxy) args.push("--proxy", options.proxy);
+//   if (options.allowPrivateNetwork) args.push("--allow-private-network");
+//   const binaryPath = await getBinaryPath();
+//   const child = spawn(binaryPath, args, {
+//     stdio: ["ignore", "pipe", "pipe"],
+//   });
+//   if (!child.stdout || !child.stderr) {
+//     throw new Error("Failed to attach to Obscura stdout/stderr.");
+//   }
+//   return new Promise((resolve, reject) => {
+//     let stdout = "";
+//     let stderr = "";
+//     child.stdout.on("data", (chunk) => {
+//       stdout += chunk.toString();
+//     });
+//     child.stderr.on("data", (chunk) => {
+//       stderr += chunk.toString();
+//       if (options.logs) {
+//         process.stderr.write(chunk);
+//       }
+//     });
+//     child.on("error", reject);
+//     child.on("close", (code) => {
+//       if (code !== 0) {
+//         return reject(new Error(stderr || `Exited with code ${code}`));
+//       }
+//       resolve(stdout);
+//     });
+//   });
+// }
+export async function fetch(url, options = {}) {
+    let format = options.dump ?? "html";
+    const args = ["fetch", url, "--dump", String(format)];
+    if (options.stealth)
+        args.push("--stealth");
+    if (options.selector)
+        args.push("--selector", options.selector);
+    if (options.wait)
+        args.push("--wait", String(options.wait));
+    if (options.timeout)
+        args.push("--timeout", String(options.timeout));
+    if (options.waitUntil)
+        args.push("--wait-until", options.waitUntil);
+    if (options.userAgent)
+        args.push("--user-agent", options.userAgent);
+    if (options.proxy)
+        args.push("--proxy", options.proxy);
+    if (options.eval)
+        args.push("--eval", options.eval);
+    if (options.output)
+        args.push("--output", options.output);
+    if (options.quiet)
+        args.push("--quiet");
+    if (options.verbose)
+        args.push("--verbose");
+    const binaryPath = await getBinaryPath();
+    const child = spawn(binaryPath, args, {
+        stdio: ["ignore", "pipe", "pipe"],
+    });
+    if (!child.stdout || !child.stderr) {
+        throw new Error("Failed to attach to Obscura stdout/stderr.");
+    }
+    return new Promise((resolve, reject) => {
+        const child = spawn(binaryPath, args);
+        let stdout = "";
+        let stderr = "";
+        child.stdout?.on("data", (chunk) => {
+            stdout += chunk.toString();
+        });
+        child.stderr?.on("data", (chunk) => {
+            stderr += chunk.toString();
+            if (options.logs) {
+                process.stderr.write(chunk);
+            }
+        });
+        child.on("error", reject);
+        child.on("close", (code) => {
+            if (code !== 0) {
+                return reject(new Error(stderr || `Exited with code ${code}`));
+            }
+            resolve(stdout);
+        });
+    });
+}
 export async function loadObscura(options = {}) {
     const host = options.host || "127.0.0.1";
     const port = options.port || (await findOpenPort(host));

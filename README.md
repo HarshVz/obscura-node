@@ -1,6 +1,6 @@
 # obscura-node
 
-> Node.js wrapper for [Obscura](https://github.com/h4ckf0r0day/obscura) — the Rust-powered headless browser built for AI agents and web scraping. Drop-in replacement for headless Chrome with Puppeteer & Playwright.
+> Node.js wrapper for [Obscura](https://github.com/h4ckf0r0day/obscura) — the Rust-powered headless browser built for AI agents and web scraping. Drop-in replacement for headless Chrome with Puppeteer & Playwright. Includes a one-shot `ObscuraFetch` API for lightning-fast page fetching.
 
 [![npm version](https://img.shields.io/npm/v/obscura-node)](https://www.npmjs.com/package/obscura-node)
 [![GitHub](https://img.shields.io/github/stars/HarshVz/obscura-node?label=obscura-node)](https://github.com/HarshVz/obscura-node)
@@ -14,7 +14,10 @@
 
 [Obscura](https://github.com/h4ckf0r0day/obscura) is an open-source headless browser engine **written from scratch in Rust** — not a fork or fork of Chromium. It runs real JavaScript via V8 (`deno_core`), builds a live DOM from parsed HTML, and exposes the **Chrome DevTools Protocol (CDP)** over WebSocket. This means it works as a **drop-in replacement** for headless Chrome with **Puppeteer** and **Playwright** — but at a fraction of the resource cost.
 
-**obscura-node** downloads, installs, and launches the Obscura binary for you. One function call gives you a CDP endpoint you can use with any CDP-compatible library.
+**obscura-node** gives you two ways to use Obscura:
+
+- **`loadObscura()`** — spawns `obscura serve`, returns a CDP WebSocket endpoint for use with Puppeteer, Playwright, or any CDP client.
+- **`ObscuraFetch()`** — one-shot `obscura fetch` call. Fetches a URL, renders the page (JS, DOM), and returns the output as a string. No server setup, no WebSocket, no cleanup.
 
 > **💡 obscura-node is a Node.js wrapper around [Obscura](https://github.com/h4ckf0r0day/obscura)** — the incredible Rust headless browser built by [@h4ckf0r0day](https://github.com/h4ckf0r0day). All credit for the browser engine, stealth, benchmarks, and CDP implementation goes to the original author. This package just makes it easy to use from Node.js.
 
@@ -69,6 +72,8 @@
 
 ## Features
 
+- **Two APIs** — `loadObscura()` for CDP-based multi-page sessions (Puppeteer/Playwright), `ObscuraFetch()` for one-shot page fetching
+- **One-shot `ObscuraFetch`** — fetch any URL and get rendered output (HTML, text, markdown, links, assets) in a single call. Significantly faster than spinning up a full CDP server
 - **Zero dependencies** — single Rust binary, no Chrome/Node.js runtime required
 - **Automatic download** — installs the right binary for your platform (Linux x64, macOS ARM/x64, Windows x64)
 - **CDP WebSocket endpoint** — use with Puppeteer, Playwright, or any CDP client
@@ -86,11 +91,26 @@
 npm install obscura-node
 ```
 
-The Obscura binary downloads automatically on first `loadObscura()` call if not present.
+The Obscura binary downloads automatically on the first `loadObscura()` or `ObscuraFetch()` call if not present.
 
 ---
 
 ## Quick Start
+
+### One-shot fetch (v1.1.0+)
+
+```ts
+import { ObscuraFetch } from "obscura-node";
+
+const html = await ObscuraFetch("https://example.com");
+console.log(html);
+
+// Get text content instead
+const text = await ObscuraFetch("https://example.com", { dump: "text" });
+console.log(text);
+```
+
+### CDP server (Puppeteer / Playwright)
 
 ```ts
 import loadObscura from "obscura-node";
@@ -118,9 +138,53 @@ await obscura.close();
 
 ## API Reference
 
+### `ObscuraFetch(url, options?)` — v1.1.0+
+
+One-shot fetch. Spawns `obscura fetch <url> --dump <format>`, renders the page with full V8 JavaScript, and returns the output. No persistent server, no WebSocket, no cleanup needed.
+
+```ts
+import { ObscuraFetch } from "obscura-node";
+
+const result = await ObscuraFetch("https://example.com", {
+  dump: "markdown",
+  stealth: true,
+  timeout: 15,
+});
+```
+
+#### Options (`FetchOptions`)
+
+| Property | Type | Default | CLI flag | Description |
+|----------|------|---------|----------|-------------|
+| `dump` | `"html" \| "text" \| "markdown" \| "links" \| "assets" \| "original"` | `"html"` | `--dump` | Output format |
+| `selector` | `string` | — | `--selector` | CSS selector to extract specific elements |
+| `wait` | `number` | `5` | `--wait` | Seconds to wait before capturing |
+| `timeout` | `number` | `30` | `--timeout` | Total timeout in seconds |
+| `waitUntil` | `"domcontentloaded" \| "load" \| "networkidle2" \| "networkidle0"` | `"load"` | `--wait-until` | When to consider navigation complete |
+| `userAgent` | `string` | — | `--user-agent` | Custom user agent |
+| `proxy` | `string` | — | `--proxy` | HTTP or SOCKS5 proxy URL |
+| `stealth` | `boolean` | `false` | `--stealth` | Enable anti-fingerprinting + tracker blocking |
+| `eval` | `string` | — | `--eval` | JavaScript expression to evaluate in the page |
+| `output` | `string` | — | `--output` | Write output to a file instead of stdout |
+| `quiet` | `boolean` | `false` | `--quiet` | Suppress info logs |
+| `verbose` | `boolean` | `false` | `--verbose` | Enable debug logging |
+
+#### Dump formats
+
+| Format | Description |
+|--------|-------------|
+| `html` | Rendered HTML after JavaScript execution |
+| `text` | Plain text with navigation/header/footer stripped |
+| `markdown` | Clean Markdown via native DOM-to-Markdown conversion (`LP.getMarkdown`) |
+| `links` | List of all links on the page |
+| `assets` | Inventory of page sub-resources |
+| `original` | Raw unmodified source |
+
+---
+
 ### `loadObscura(options?)`
 
-Main entry point. Downloads the Obscura binary (if missing), spawns it as a child process, and waits for the CDP endpoint to become ready.
+Starts a persistent CDP server (`obscura serve`) for multi-page sessions with Puppeteer, Playwright, or any CDP-compatible client.
 
 #### Options
 
@@ -254,9 +318,14 @@ obscura-node (npm package)
        ├── src/utils/install.ts  →  Downloads Obscura binary from GitHub releases
        │                            Extracts to src/binaries/<platform>/obscura
        │
-       └── src/utils/start.ts    →  Spawns `obscura serve --port <port>`
-                                    Polls CDP /json/version until ready
-                                    Returns { endpoint, wsEndpoint, close }
+       ├── ObscuraFetch(url, opts)
+       │     └──  spawns `obscura fetch <url> --dump <format> ...`
+       │          Captures stdout  →  returns rendered content as string
+       │
+       └── loadObscura(opts)
+             └──  spawns `obscura serve --port <port>`
+                  Polls CDP /json/version until ready
+                  Returns { endpoint, wsEndpoint, close }
 ```
 
 ---
